@@ -59,32 +59,37 @@
 
         <button onclick="showRandomJoke()">New Joke</button>
         <br><br>
-        <button onclick="alert('Calculator coming soon!')">
+        <button onclick="window.location.href='calculator.html'">
             Calculator
         </button>
     </div>
 
     <script>
-        const jokes = [
-            "Why was the equal sign so humble? Because it knew it wasn't less than or greater than anyone else!",
-            "Why do plants hate math? Because it gives them square roots.",
-            "Why was the math book sad? Because it had too many problems.",
-            "Why didn't the quarter roll down the hill with the nickel? Because it had more cents.",
-            "Why do mathematicians love parks? Because of all the natural logs.",
-            "What do you call friends who love math? Alge-bros.",
-            "Why was six afraid of seven? Because seven eight nine.",
-            "What is a math teacher's favorite place in NYC? Times Square.",
-            "Why did the student wear glasses in math class? To improve division.",
-            "Parallel lines have so much in common. It's a shame they'll never meet."
-        ];
+const jokes = [
+    "Why was the equal sign so humble? Because it knew it wasn't less than or greater than anyone else!",
+    "Why do plants hate math? Because it gives them square roots.",
+    "Why was the math book sad? Because it had too many problems.",
+    "Why didn't the quarter roll down the hill with the nickel? Because it had more cents.",
+    "Why do mathematicians love parks? Because of all the natural logs.",
+    "What do you call friends who love math? Alge-bros.",
+    "Why was six afraid of seven? Because seven eight nine.",
+    "What is a math teacher's favorite place in NYC? Times Square.",
+    "Why did the student wear glasses in math class? To improve division.",
+    "Parallel lines have so much in common. It's a shame they'll never meet."
+];
 
-        function showRandomJoke() {
-            const randomIndex = Math.floor(Math.random() * jokes.length);
-            document.getElementById("joke").textContent = jokes[randomIndex];
-        }
+const jokeElement = document.getElementById("joke");
+const button = document.getElementById("newJokeBtn");
 
-        // Show a random joke when the page loads
-        showRandomJoke();
-    </script>
+function showRandomJoke() {
+    const randomIndex = Math.floor(Math.random() * jokes.length);
+    jokeElement.textContent = jokes[randomIndex];
+}
+
+button.addEventListener("click", showRandomJoke);
+
+// Show one immediately when page loads
+showRandomJoke();
+</script>
 </body>
 </html>
