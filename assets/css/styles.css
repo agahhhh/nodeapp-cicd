@@ -811,3 +811,115 @@
       background-color: #555555;
       color: #e0e0e0;
     }
+
+/* Accordion Container */
+.accordion-item {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: #fff;
+}
+
+/* Accordion Header Button */
+.accordion-button {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 15px 20px;
+    border: none;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+.accordion-button:hover {
+    background: linear-gradient(135deg, #4338ca, #4f46e5);
+}
+
+/* Expanded State */
+.accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, #4338ca, #4f46e5);
+    color: #fff;
+    box-shadow: none;
+}
+
+/* Remove Bootstrap Default Focus */
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+/* Custom Arrow Color */
+.accordion-button::after {
+    filter: brightness(0) invert(1);
+}
+
+/* Accordion Body */
+.accordion-body {
+    background: #f8fafc;
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Labels */
+.accordion-body label {
+    color: #374151;
+    font-weight: 600;
+}
+
+/* Input Fields */
+.accordion-body .form-control {
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+}
+
+.accordion-body .form-control:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 8px rgba(79, 70, 229, 0.2);
+}
+
+/* Buttons */
+.accordion-body .btn-primary {
+    background: #4f46e5;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.accordion-body .btn-primary:hover {
+    background: #4338ca;
+}
+
+.accordion-body .btn-outline-secondary {
+    border-radius: 10px;
+}
+
+/* Result Box */
+#pc-result {
+    border-radius: 10px;
+    border-left: 4px solid #4f46e5;
+    background: #eef2ff;
+}
+
+/* Example Box */
+.accordion-body .alert-light {
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .accordion-button {
+        font-size: 0.9rem;
+        padding: 12px 15px;
+    }
+
+    .accordion-body {
+        padding: 15px;
+    }
+}

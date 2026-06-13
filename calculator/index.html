@@ -72,60 +72,55 @@
                     <button class="btn btn-equals" onclick="calculateResult()" style="grid-column: span 4;">=</button>
                   </div>
                   <div class="accordion-item">
-                          <h2 class="accordion-header" id="headingPhysics">
-                            <button class="accordion-button collapsed d-flex justify-content-between align-items-center"
-                              type="button" data-bs-toggle="collapse" data-bs-target="#collapsePhysics"
-                              aria-expanded="false" aria-controls="collapsePhysics">
-                              <span>⚛️ Physics Calculator</span>
-                            </button>
-                          </h2>
-                          <div id="collapsePhysics" class="accordion-collapse collapse"
-                          aria-labelledby="headingPhysics" data-bs-parent="#converterAccordion">
-                            <div class="accordion-body">
-                              
-                              <!-- Category Selection -->
-                              <div class="mb-3">
-                                <label class="form-label small" style="font-weight: 600;">Select Category</label>
-                                <select class="form-select form-select-sm" id="physics-category" onchange="updatePhysicsFormulas()">
-                                  <option value="">-- Select Category --</option>
-                                  <option value="mechanics">Mechanics</option>
-                                  <option value="electricity">Electricity</option>
-                                  <option value="thermodynamics">Thermodynamics</option>
-                                  <option value="waves">Waves</option>
-                                </select>
-                              </div>
-                              
-                              <!-- Formula Selection -->
-                              <div class="mb-3">
-                                <label class="form-label small" style="font-weight: 600;">Select Formula</label>
-                                <select class="form-select form-select-sm" id="physics-formula" onchange="updatePhysicsInputs()">
-                                  <option value="">-- Select Formula --</option>
-                                </select>
-                              </div>
-                              
-                              <!-- Dynamic Inputs Container -->
-                              <div id="physics-inputs-container"></div>
-                              
-                              <!-- Calculate Button -->
-                              <div class="d-grid gap-2 mb-3">
-                                <button class="btn btn-primary btn-sm" onclick="calculatePhysics()">
-                                  Calculate
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="clearPhysicsCalculator()">
-                                  Clear
-                                </button>
-                              </div>
+                    <h2 class="accordion-header">
+                      <button
+                        class="accordion-button collapsed d-flex justify-content-between align-items-center"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#collapsePercentageChange"
+                        aria-expanded="false" aria-controls="collapsePercentageChange">
+                        <span>📊 Percentage Change</span>
+                      </button>
+                    </h2>
+                    <div id="collapsePercentageChange" class="accordion-collapse collapse"
+                      aria-labelledby="matrix-calculator-tab" data-bs-parent="#converterAccordion">
+                      <div class="accordion-body">
+                        <p class="text-muted small mb-3">Calculate percentage increase or decrease between two
+                          values</p>
 
-                              <!-- Result Display -->
-                              <div id="physics-result"></div>
-                              
-                              <!-- Info Box -->
-                              <div class="alert alert-info alert-sm py-2 px-3 mb-0" style="font-size: 0.85rem;">
-                                <strong>💡 Tip:</strong> Select a category and formula to get started. Common formulas include velocity, force, electrical power, and wave speed.
-                              </div>
-                            </div>
-                          </div>
+                        <!-- Original Value -->
+                        <div class="mb-3">
+                          <label class="form-label small" style="font-weight: 600;">Original Value</label>
+                          <input type="number" class="form-control" id="pc-original"
+                            placeholder="Enter original value" value="100">
                         </div>
+                        <div class="mb-3">
+                          <label class="form-label small" style="font-weight: 600;">New Value</label>
+                          <input type="number" class="form-control" id="pc-new" placeholder="Enter new value"
+                            value="150">
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                          <button class="btn btn-primary btn-sm"
+                            onclick="calculatePercentageChange()">Calculate
+                            Change</button>
+                          <button class="btn btn-outline-secondary btn-sm"
+                            onclick="clearPercentageChange()">Clear</button>
+                        </div>
+                        <div id="pc-result" class="alert alert-info py-2 px-3 mb-0" style="display: none;">
+                          <div class="mb-2"><strong>Percentage Change:</strong> <span
+                              id="pc-change-value">0</span>%</div>
+                          <div class="mb-2"><strong>Absolute Change:</strong> <span
+                              id="pc-absolute-change">0</span></div>
+                          <div><strong>Description:</strong> <span id="pc-description"
+                              style="font-style: italic; color: #555;"></span></div>
+                        </div>
+                        <div class="alert alert-light py-2 px-3 mt-3 mb-0 border" style="font-size: 0.85rem;">
+                          <strong>Examples:</strong><br>
+                          • Original: 100, New: 150 → <strong>50% increase</strong><br>
+                          • Original: 200, New: 150 → <strong>25% decrease</strong><br>
+                          • Original: 50, New: 50 → <strong>0% (no change)</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
