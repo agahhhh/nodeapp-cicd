@@ -214,7 +214,7 @@ jobs:
  
       - name: Smoke test — health endpoint
         run: |
-          RESPONSE=$(curl -sf http://${{ secrets.FTP_SERVER }}/nodeapp-cicd/health/)
+          RESPONSE=$(curl -sf http://${{ secrets.FTP_SERVER }}/health/)
           echo "Health response: $RESPONSE"
           STATUS=$(echo $RESPONSE | python3 -c "import json,sys; print(json.load(sys.stdin)['status'])")
           if [ "$STATUS" != 'ok' ]; then
