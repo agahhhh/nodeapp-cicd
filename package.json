@@ -1,0 +1,42 @@
+{
+  "name": "vuna-calc-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --coverage --coverageReporters=json --coverageReporters=text --coverageReporters=lcov",
+    "test:ci": "jest --coverage --coverageReporters=json-summary --ci --forceExit",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "build": "echo Build step: nothing to transpile for plain Node.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/server.js",
+      "!src/lib/lib.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 20,
+        "functions": 20,
+        "lines": 30,
+        "statements": 30
+      }
+    }
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}

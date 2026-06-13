@@ -1,0 +1,260 @@
+# .github/workflows/ci-cd.yml
+name: CI/CD Pipeline
+ 
+on:
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*.*.*'           # Triggers on version tags like v1.2.3
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:      # Allows manual run from the Actions UI
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [ staging, production ]
+
+permissions:           # Explicit, at the workflow top
+  contents: read       # Read repository code only
+  pull-requests: write
+  issues: write
+
+# Prevent concurrent deployments to the same environment
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false   # Queue rather than cancel deploy jobs
+ 
+env:
+  NODE_VERSION:   '20'
+
+jobs:
+ 
+  # ── Job 1: Lint and Build ─────────────────────────────────────
+  lint-and-build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read   # Checkout only
+ 
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+ 
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'             # Caches node_modules between runs
+ 
+      - name: Install all dependencies
+        run: npm ci                # Reproducible install (uses package-lock.json)
+ 
+      - name: Run ESLint
+        run: npm run lint
+ 
+      - name: Verify application loads
+        run: node -e "require('./src/app'); console.log('App loaded OK');"
+ 
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-${{ github.sha }}
+          path: |
+            src/
+            package*.json
+          retention-days: 7
+ 
+  # ── Job 2: Unit Tests ─────────────────────────────────────────
+  test:
+    name: Unit Tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    needs: [lint-and-build]      # Only runs after lint passes
+ 
+    strategy:
+      fail-fast: false           # Don't cancel other matrix jobs if one fails
+      matrix:
+        node: ['18', '20']       # Test against two LTS versions
+ 
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+ 
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+ 
+      - name: Install dependencies
+        run: npm ci
+ 
+      - name: Run tests with coverage
+        run: npm run test:ci
+ 
+      - name: Print coverage summary
+        run: |
+          echo '### Test Coverage Summary' >> $GITHUB_STEP_SUMMARY
+          cat coverage/coverage-summary.json | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['total']
+          print(f\"| Metric | Covered | Total | % |\")  
+          print(f\"| Lines  | {d['lines']['covered']} | {d['lines']['total']} | {d['lines']['pct']}% |\")  
+          " >> $GITHUB_STEP_SUMMARY
+ 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        if: matrix.node == '20'  # Only upload once
+        with:
+          name: coverage-report-${{ github.sha }}
+          path: coverage/
+          retention-days: 30
+  
+  # ── Job 3: Security Audit ─────────────────────────────────────
+  security-audit:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+    needs: [lint-and-build]
+ 
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+ 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+ 
+      - name: Install dependencies
+        run: npm ci
+ 
+      - name: Run npm audit
+        run: npm audit --audit-level=high --json > audit-report.json || true
+        continue-on-error: true  # Remove this line in production
+ 
+      - name: Show audit summary
+        run: npm audit --audit-level=high || echo 'Vulnerabilities found - review audit-report.json'
+        continue-on-error: true
+ 
+      - name: Upload audit report
+        uses: actions/upload-artifact@v7
+        with:
+          name: audit-report-${{ github.sha }}
+          path: audit-report.json
+          retention-days: 90
+
+    # ── Job 4: Deploy via FTP ─────────────────────────────────────
+  deploy:
+    name: Deploy to Hosting via FTP
+    runs-on: ubuntu-latest
+    needs: [test, security-audit]
+    permissions:
+      contents: read   # For checkout
+      packages: write  # If we were to publish packages
+      id-token: write   # For OIDC auth if needed      
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/nodeapp-cicd/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            node_modules/**
+            coverage/**
+            tests/**
+            .eslintrc.json
+            .dockerignore
+            Dockerfile
+            **/*.md
+            **/*.log
+            .env
+            .env.*
+
+      - name: Write deployment summary
+        run: |
+          echo '## Deployment Complete 🚀' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '| Item | Value |' >> $GITHUB_STEP_SUMMARY
+          echo '|------|-------|' >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployed by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ✅ Files uploaded successfully |" >> $GITHUB_STEP_SUMMARY
+
+  # ── Job 6: Post-Deploy Verification ───────────────────────────
+  verify-deploy:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+ 
+    steps:
+      - name: Wait for service to stabilise
+        run: sleep 15
+ 
+      - name: Smoke test — health endpoint
+        run: |
+          RESPONSE=$(curl -sf http://${{ secrets.FTP_SERVER }}/nodeapp-cicd/health/)
+          echo "Health response: $RESPONSE"
+          STATUS=$(echo $RESPONSE | python3 -c "import json,sys; print(json.load(sys.stdin)['status'])")
+          if [ "$STATUS" != 'ok' ]; then
+            echo 'Health check failed! Status was not ok.'
+            exit 1
+          fi
+          echo 'Health check passed!'
+ 
+      - name: Write deployment summary
+        run: |
+          echo '## Deployment Successful 🚀' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '| Item | Value |' >> $GITHUB_STEP_SUMMARY
+          echo '|------|-------|' >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Server | http://${{ secrets.SERVER_HOST }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ── Job 7: Notify on Failure ───────────────────────────────────
+  notify-on-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+    needs: [lint-and-build, test, security-audit, deploy, verify-deploy]
+    if: failure()           # Only runs if ANY upstream job failed
+ 
+    steps: 
+      - name: Create GitHub Issue on repeated failure
+        if: github.ref == 'refs/heads/main'
+        uses: actions/github-script@v9
+        with:
+          script: |
+            github.rest.issues.create({
+              ...context.repo,
+              title: `Pipeline failure on main: ${context.sha.substring(0,7)}`,
+              body: `Pipeline run ${{ github.run_id }} failed.\nSee: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              labels: ['bug', 'ci-failure']
+            });
+ 

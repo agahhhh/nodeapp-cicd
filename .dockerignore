@@ -1,0 +1,33 @@
+# Dependency directories
+node_modules
+
+# Logs and debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Local environment files
+.env
+
+# Build output
+dist
+build
+coverage
+logs
+
+# Version control
+.git
+.gitignore
+.github
+
+# IDE/editor files
+.DS_Store
+.vscode
+.idea
+
+# Documentation not needed in the build context
+*.md
+
+# Ignore the Docker ignore file itself
+.dockerignore

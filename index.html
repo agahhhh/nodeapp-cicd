@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Jokes Home</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #f4f6f9, #dfe9f3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 650px;
+    }
+
+    h1 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .joke {
+        font-size: 1.3rem;
+        color: #555;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.8s ease;
+        opacity: 1;
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
+    .calculator-btn {
+        margin-top: 20px;
+        padding: 12px 28px;
+        border: none;
+        border-radius: 10px;
+        background: #0078ff;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .calculator-btn:hover {
+        background: #005fd1;
+        transform: scale(1.05);
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>😂 Math Joke Generator</h1>
+
+    <div id="joke" class="joke"></div>
+
+    <button class="calculator-btn" onclick="window.location.href='/calculator/'">
+        Calculator
+    </button>
+</div>
+
+<script>
+const jokes = [
+    "Why was the math book sad? Because it had too many problems.",
+    "Parallel lines have so much in common. It's a shame they'll never meet.",
+    "Why do plants hate math? Because it gives them square roots.",
+    "What do you call friends who love math? Alge-bros.",
+    "Why was six afraid of seven? Because seven eight nine.",
+    "Why didn't the quarter roll down the hill with the nickel? Because it had more cents.",
+    "Why do mathematicians love parks? Because of all the natural logs.",
+    "Why did the student wear glasses in math class? To improve division.",
+    "What is a math teacher's favorite place? Times Square.",
+    "Why was the equal sign so humble? Because it wasn't less than or greater than anyone else."
+];
+
+const jokeElement = document.getElementById("joke");
+let current = 0;
+
+function changeJoke() {
+    jokeElement.classList.add("fade-out");
+
+    setTimeout(() => {
+        current = (current + 1) % jokes.length;
+        jokeElement.textContent = jokes[current];
+        jokeElement.classList.remove("fade-out");
+    }, 800);
+}
+
+jokeElement.textContent = jokes[0];
+
+// Change joke every 5 seconds
+setInterval(changeJoke, 5000);
+</script>
+
+</body>
+</html>

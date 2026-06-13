@@ -1,0 +1,57 @@
+# .github/workflows/pr-check.yml
+name: Pull Request Check
+ 
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:           # Explicit, at the workflow top
+  contents: read       # Read repository code only
+  pull-requests: write
+  issues: write
+ 
+jobs:
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+ 
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+ 
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:ci
+ 
+      - name: Post PR comment with test results
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const outcome = '${{ job.status }}';
+            const icon = outcome === 'success' ? '✅' : '❌';
+            const body = [
+              `## ${icon} PR Validation ${outcome}`,
+              `**Commit:** ${context.sha.substring(0, 7)}`,
+              `**Branch:** ${context.payload.pull_request.head.ref}`,
+              '',
+              '| Check | Status |',
+              '|-------|--------|',
+              `| ESLint | ${outcome === 'success' ? '✅ Pass' : '❌ Fail'} |`,
+              `| Unit Tests | ${outcome === 'success' ? '✅ Pass' : '❌ Fail'} |`,
+            ].join('\n');
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });
+ 
