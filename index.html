@@ -1,112 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Jokes Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Jokes Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #f4f6f9, #dfe9f3);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
 
-    .container {
-        background: white;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        text-align: center;
-        max-width: 650px;
-    }
+        h1 {
+            color: #333;
+        }
 
-    h1 {
-        color: #333;
-        margin-bottom: 20px;
-    }
+        .joke {
+            font-size: 1.2rem;
+            margin: 25px 0;
+            color: #555;
+            min-height: 80px;
+        }
 
-    .joke {
-        font-size: 1.3rem;
-        color: #555;
-        min-height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.8s ease;
-        opacity: 1;
-    }
+        button {
+            background: #0078ff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-    .fade-out {
-        opacity: 0;
-    }
-
-    .calculator-btn {
-        margin-top: 20px;
-        padding: 12px 28px;
-        border: none;
-        border-radius: 10px;
-        background: #0078ff;
-        color: white;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s ease, background 0.3s ease;
-    }
-
-    .calculator-btn:hover {
-        background: #005fd1;
-        transform: scale(1.05);
-    }
-</style>
+        button:hover {
+            background: #005fcc;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>😂 Math Joke Generator</h1>
 
-<div class="container">
-    <h1>😂 Math Joke Generator</h1>
+        <p id="joke" class="joke"></p>
 
-    <div id="joke" class="joke"></div>
+        <button onclick="showRandomJoke()">New Joke</button>
+        <br><br>
+        <button onclick="alert('Calculator coming soon!')">
+            Calculator
+        </button>
+    </div>
 
-    <button class="calculator-btn" onclick="window.location.href='/calculator/'">
-        Calculator
-    </button>
-</div>
+    <script>
+        const jokes = [
+            "Why was the equal sign so humble? Because it knew it wasn't less than or greater than anyone else!",
+            "Why do plants hate math? Because it gives them square roots.",
+            "Why was the math book sad? Because it had too many problems.",
+            "Why didn't the quarter roll down the hill with the nickel? Because it had more cents.",
+            "Why do mathematicians love parks? Because of all the natural logs.",
+            "What do you call friends who love math? Alge-bros.",
+            "Why was six afraid of seven? Because seven eight nine.",
+            "What is a math teacher's favorite place in NYC? Times Square.",
+            "Why did the student wear glasses in math class? To improve division.",
+            "Parallel lines have so much in common. It's a shame they'll never meet."
+        ];
 
-<script>
-const jokes = [
-    "Why was the math book sad? Because it had too many problems.",
-    "Parallel lines have so much in common. It's a shame they'll never meet.",
-    "Why do plants hate math? Because it gives them square roots.",
-    "What do you call friends who love math? Alge-bros.",
-    "Why was six afraid of seven? Because seven eight nine.",
-    "Why didn't the quarter roll down the hill with the nickel? Because it had more cents.",
-    "Why do mathematicians love parks? Because of all the natural logs.",
-    "Why did the student wear glasses in math class? To improve division.",
-    "What is a math teacher's favorite place? Times Square.",
-    "Why was the equal sign so humble? Because it wasn't less than or greater than anyone else."
-];
+        function showRandomJoke() {
+            const randomIndex = Math.floor(Math.random() * jokes.length);
+            document.getElementById("joke").textContent = jokes[randomIndex];
+        }
 
-const jokeElement = document.getElementById("joke");
-let current = 0;
-
-function changeJoke() {
-    jokeElement.classList.add("fade-out");
-
-    setTimeout(() => {
-        current = (current + 1) % jokes.length;
-        jokeElement.textContent = jokes[current];
-        jokeElement.classList.remove("fade-out");
-    }, 800);
-}
-
-jokeElement.textContent = jokes[0];
-
-// Change joke every 5 seconds
-setInterval(changeJoke, 5000);
-</script>
-
+        // Show a random joke when the page loads
+        showRandomJoke();
+    </script>
 </body>
 </html>
