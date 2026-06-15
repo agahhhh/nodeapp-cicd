@@ -153,23 +153,24 @@
       gap: 12px;
     }
 
-    .calculator .btn {
-      height: 60px;
-      border-radius: 14px;
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      border: none;
-      box-shadow: var(--btn-shadow);
-    }
+    .calculator .btn,
+  #hausa-btn,
+  #english-btn,
+  #portuguese-btn,
+  #igbo-btn,
+  #yoruba-btn {
+    background: #6f42c1 !important;
+    color: white !important;
+}
 
-    .calculator .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--btn-hover-shadow);
-    }
+.calculator .btn:hover,
+#hausa-btn:hover,
+#english-btn:hover,
+#portuguese-btn:hover,
+#igbo-btn:hover,
+#yoruba-btn:hover {
+  background: #5a32a3 !important;
+}
 
     .calculator .btn:active {
       transform: translateY(0);
